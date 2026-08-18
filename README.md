@@ -96,3 +96,37 @@ async fn main() {
 spotnowplay = { git = "https://github.com/yanorei32/spotnowplay", tag = "v0.1.0" }
 tokio = { version = "1.53.1", features = ["rt-multi-thread", "macros"] }
 ```
+
+## How it works
+
+```mermaid
+sequenceDiagram
+    participant B as spotnowplay
+    participant S as Spotify
+    participant D as Discord
+    Note over B,D: Discord Client Handshake
+    B->>D: Connect wss://gateway.discord.gg/
+    activate D
+    B->>D: op: 2
+    D->>B: Ready (w/ Spotify Token)
+    deactivate D
+    Note over B,S: Check Spotify token availability
+    B->>S: GET /v1/me/player/devices
+    alt available
+        S->>B: 200 OK
+    else expired
+        S->>B: 401 Unauthorized
+        Note over B,D: Renew Spotify Token
+        B->>D: GET /api/v9/users/@me/connections/spotify/{spotify_id}/access-token
+        D->>B: 200 OK (w/ renewed Spotify token)
+    end
+    Note over B,S: Fetch initial state
+    B->>S: GET /v1/me/player
+    S->>B: 200 OK (w/ Notify on_playback_state_update)
+    Note over B,S: Start incremental update
+    B->>S: Connect wss://dealer.spotify.com/
+    activate S
+    loop Incremental Update
+        S->>B: Notify on_playback_state_update
+    end
+```
