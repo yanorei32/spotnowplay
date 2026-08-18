@@ -34,6 +34,8 @@ Reference: [Discord Spotify Connection – Discord](https://support.discord.com/
 ### Step 2. Run the example
 
 ```bash
+git clone https://github.com/yanorei32/spotnowplay
+cd spotnowplay
 export DISCORD_TOKEN="ush9Zohzie6ahmohsoo6meCh.IThah7.jeephaijiachu8kuWoh0aephe5e"
 cargo run --example demo
 ```
