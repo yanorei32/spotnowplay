@@ -96,11 +96,6 @@ impl EventHandler for App {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let token =
-        discord_integration::get_available_spotify_token(&std::env::var("DISCORD_TOKEN").unwrap())
-            .await
-            .unwrap();
-
     let token = discord_integration::get_available_spotify_token(
         &std::env::var("DISCORD_TOKEN")
             .expect("Specified the Discord token at DISCORD_TOKEN environment"),
