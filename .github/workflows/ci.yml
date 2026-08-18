@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'master'
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUST_CACHE_VERSION: v1
+
+jobs:
+  clippy_and_test:
+    continue-on-error: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ghimage: ubuntu-24.04
+          - ghimage: ubuntu-24.04-arm
+
+    permissions:
+      packages: write
+      checks: write
+      contents: read
+      deployments: write
+
+    runs-on: ${{ matrix.ghimage }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Get Rust toolchain
+        id: toolchain
+        run: |
+          awk -F'[ ="]+' '$1 == "channel" { print "toolchain=" $2 }' rust-toolchain >> "$GITHUB_OUTPUT"
+
+      - name: install clippy
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ steps.toolchain.outputs.toolchain }}
+          components: clippy
+
+      - name: cache dependencies
+        uses: Swatinem/rust-cache@v2.9.2
+        with:
+          prefix-key: ${{ env.RUST_CACHE_VERSION }}-rust
+
+      - name: clippy check
+        uses: yanorei32/action-clippy@50412b135153ebee7d4b8a5b868c4defdc663683
+        with:
+          reporter: github-check
+
+      - name: unit test
+        run: |
+          cargo test --no-run --locked
+          cargo test
+
+      - name: release build
+        run: |
+          cargo build --release
+          cargo build --release --example demo
+          cargo build --release --example simple
