@@ -93,7 +93,7 @@ async fn main() {
 
 ```toml
 [dependencies]
-spotnowplay = { git = "https://github.com/yanorei32/spotnowplay", tag = "v0.1.0" }
+spotnowplay = { git = "https://github.com/yanorei32/spotnowplay", tag = "v0.1.1" }
 tokio = { version = "1.53.1", features = ["rt-multi-thread", "macros"] }
 ```
 
