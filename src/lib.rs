@@ -11,6 +11,7 @@ pub mod discord_integration;
 
 pub use async_trait;
 pub use serde_json;
+pub use tokio_tungstenite::tungstenite;
 
 #[derive(Error, Debug)]
 pub enum TokenAvailabilityCheckError {
